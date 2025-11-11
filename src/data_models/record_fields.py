@@ -27,6 +27,20 @@ class Phone(Field):
     def __eq__(self, value):
         return self.value == value
 
+class Email(Field):
+    def __init__(self, email:str):
+        self.is_email_valid(email)
+        super().__init__(email)
+
+    def is_email_valid(self, email: str):
+        if len(email) < 5 or not "@" in email:
+            raise Exception("Invalid email - email should contain @ character")
+
+    def update(self, email):
+        self.is_email_valid(email)
+        self.value = email
+
+
 class Birthday(Field):
     def __init__(self, value):
         try:
@@ -48,3 +62,10 @@ class Birthday(Field):
     
     def __str__(self):
         return self.value.strftime("%d.%m.%Y")
+
+    def age(self):
+        today = datetime.today()
+        age = today.year - self.value.year
+        if (today.month, today.day) < (self.value.month, self.value.day):
+            age -= 1
+        return age
