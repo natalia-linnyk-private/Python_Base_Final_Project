@@ -11,6 +11,10 @@ class CommandEnum(Enum):
     ADD_BIRTHDAY = "add-birthday"
     SHOW_BIRTHDAY = "show-birthday"
     BIRTHDAYS = "birthdays"
+    ADD_NOTE = "add-note"
+    EDIT_NOTE = "edit-note"
+    DELETE_NOTE = "delete-note"
+    LIST_NOTES = "all-notes"
     EXIT_COMMANDS = ("exit", "close")
     REMOVE_CONTACT = "remove"
     FIND_CONTACT_BY_NAME = "find-by-name"

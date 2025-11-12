@@ -1,5 +1,7 @@
 import src.command_processing.command_processor as command_processor
+from src.command_processing import notes_processor
 from src.command_processing.command_parser import parse_input_data
+from src.data_models.notes_manager import NotesManager
 from src.enums.command_enums import CommandEnum
 from src.save_load_data.save_load_data import load_data, save_data
 
@@ -7,6 +9,7 @@ def main():
     user_name = input("Enter your name >>> ")
     print(f"Welcome {user_name} to the assistant bot!")
     book = load_data()
+    notes = NotesManager("notes.pkl")
 
     while True:
         try:
@@ -16,6 +19,7 @@ def main():
             if command in CommandEnum.EXIT_COMMANDS.value:
                 print(f"Good bye {user_name}!")
                 save_data(book)
+                notes.save()
                 break
 
             match command:
@@ -39,6 +43,14 @@ def main():
                     print(command_processor.show_birthday(args, book))
                 case CommandEnum.BIRTHDAYS.value:
                     print(command_processor.birthdays(book))
+                case CommandEnum.ADD_NOTE.value:
+                    print(notes_processor.add_note(args, notes))
+                case CommandEnum.EDIT_NOTE.value:
+                    print(notes_processor.edit_note(args, notes))
+                case CommandEnum.DELETE_NOTE.value:
+                    print(notes_processor.delete_note(args, notes))
+                case CommandEnum.LIST_NOTES.value:
+                    print(notes_processor.list_notes(notes))
                 case CommandEnum.REMOVE_CONTACT.value:
                     print(command_processor.remove_contact(args, book))
                 case CommandEnum.FIND_CONTACT_BY_NAME.value:
@@ -49,7 +61,7 @@ def main():
                     print(command_processor.add_address(args, book))
                 case CommandEnum.REMOVE_ADDRESS.value:
                     print(command_processor.remove_address(args, book))
-                case _: 
+                case _:
                     print("Invalid command.")
                     input_command = input("Would you like to see all commands list? Y/N >>> ").strip().lower()
                     if(input_command == 'y'):
