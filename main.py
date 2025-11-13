@@ -8,12 +8,22 @@ def main():
     user_name = input("Enter your name >>> ")
     print(f"Welcome {user_name} to the assistant bot!")
     book, notes = load_all_data()
-    
+
+    # Show help right after loading data
+    print(command_processor.show_help_file())
+
     while True:
         try:
             user_data = input("Enter the command >>> ")
-            command, *args = parse_input_data(user_data) 
-            
+            command, *args = parse_input_data(user_data)
+            print(f"[DEBUG] Parsed command: '{command}'")
+
+
+            # If user types 'help' — show help.txt and skip rest of the loop
+            if command.lower() == CommandEnum.HELP.value:
+                print(command_processor.show_help_file())
+                continue
+
             if command in CommandEnum.EXIT_COMMANDS.value:
                 save_all_data(book, notes)
                 print(f"Good bye {user_name}!")
@@ -42,8 +52,8 @@ def main():
                     print(command_processor.birthdays(book))
                 case CommandEnum.ADD_NOTE.value:
                     print(notes_processor.add_note(args, notes))
-                #case CommandEnum.EDIT_NOTE.value:
-                    #print(notes_processor.edit_note(args, notes))
+                # case CommandEnum.EDIT_NOTE.value:
+                #     print(notes_processor.edit_note(args, notes))
                 case CommandEnum.DELETE_NOTE.value:
                     print(notes_processor.delete_note(args, notes))
                 case CommandEnum.LIST_NOTES.value:
@@ -61,10 +71,11 @@ def main():
                 case _:
                     print("Invalid command.")
                     input_command = input("Would you like to see all commands list? Y/N >>> ").strip().lower()
-                    if(input_command == 'y'):
+                    if input_command == 'y':
                         print(command_processor.show_help_file())
         except Exception as error:
             print("Error happened: ", error)
+
 
 if __name__ == "__main__":
     main()
