@@ -1,3 +1,6 @@
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+
 import src.command_processing.command_processor as command_processor
 from src.command_processing.command_parser import parse_input_data
 from src.enums.command_enums import CommandEnum
@@ -7,6 +10,34 @@ def main():
     user_name = input("Enter your name >>> ")
     print(f"Welcome {user_name} to the assistant bot!")
     book = load_data()
+
+    # --- autocomplete commands setup ---
+    base_commands = [
+        CommandEnum.HELLO.value,
+        CommandEnum.ADD.value,
+        CommandEnum.CHANGE.value,
+        CommandEnum.SHOW_PHONE.value,
+        CommandEnum.ADD_EMAIL.value,
+        CommandEnum.SHOW_EMAIL.value,
+        CommandEnum.SHOW_ALL.value,
+        CommandEnum.ADD_BIRTHDAY.value,
+        CommandEnum.SHOW_BIRTHDAY.value,
+        CommandEnum.BIRTHDAYS.value,
+        CommandEnum.REMOVE_CONTACT.value,
+        CommandEnum.FIND_CONTACT_BY_NAME.value,
+        CommandEnum.FIND_CONTACT_BY_EMAIL.value,
+    ]
+
+    exit_commands_value = CommandEnum.EXIT_COMMANDS.value
+    if isinstance(exit_commands_value, (list, tuple, set)):
+        exit_commands = list(exit_commands_value)
+    else:
+        exit_commands = [exit_commands_value]
+
+    all_commands = base_commands + exit_commands
+
+    command_completer = WordCompleter(all_commands, ignore_case=True)
+    # --- end autocomplete setup ---
 
     while True:
         try:
