@@ -25,4 +25,5 @@ def test_add_record_multiple_phones():
     r = Record("Serhii")
     r.add_phone("0501112233")
     r.add_phone("0502223344")
+    
     assert len(r.phones) == 2
