@@ -1,6 +1,6 @@
 from collections import UserDict
 from src.data_models.address_book_record import Record
-from datetime import datetime, timedelta
+from datetime import datetime
 from src.data_models.record_fields import Email
 
 class AddressBook(UserDict):

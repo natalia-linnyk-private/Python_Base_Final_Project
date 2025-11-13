@@ -1,0 +1,9 @@
+TOTAL_STEPS = 50
+TIME_PER_STEP = 0.01
+FILENAME_ADDRESSBOOK_DUMP = 'address_book_dump.pkl'
+FILENAME_NOTES_DUMP = 'notes_dump.pkl'
+SAVING_PROGRESS_ADDRESSBOOK = "Saving address book..."
+SAVING_PROGRESS_NOTES = "Saving notes..."
+LOADING_PROGRESS_ADDRESSBOOK = "Loading address book..."
+LOADING_PROGRESS_NOTES = "Loading notes..."
+SAVE_DATA_FOLDER_PATH = ".assistant"

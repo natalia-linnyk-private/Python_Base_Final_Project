@@ -13,7 +13,7 @@ class CommandEnum(Enum):
     BIRTHDAYS = "birthdays"
     ADD_NOTE = "add-note"
     EDIT_NOTE = "edit-note"
-    DELETE_NOTE = "delete-note"
+    DELETE_NOTE = "remove-note"
     LIST_NOTES = "all-notes"
     EXIT_COMMANDS = ("exit", "close")
     REMOVE_CONTACT = "remove"
