@@ -26,3 +26,4 @@ class CommandEnum(Enum):
     FIND_CONTACT_BY_EMAIL = "find-by-email"
     ADD_ADDRESS = "add-address"
     REMOVE_ADDRESS = "remove-address"
+    HELP = "help"
