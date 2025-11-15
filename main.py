@@ -1,100 +1,61 @@
-from prompt_toolkit import prompt
+from prompt_toolkit import PromptSession
+from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.completion import WordCompleter
-
-import src.command_processing.command_processor as command_processor
-from src.command_processing import notes_processor
-from src.command_processing.command_parser import parse_input_data
-from src.enums.command_enums import CommandEnum
-from src.save_load_data.save_load_data import load_all_data, save_all_data
+from rich.text import Text
 from rich.console import Console
+from prompt_toolkit.styles import Style
+
+from src.constants import style_consts, messages
+import src.command_processing.contact_command_processor as contact_command_processor
+from src.command_processing.command_parser import parse_input_data
+from src.enums.command_enums import GeneralCommandEnum, ExitCommandEnum
+from src.save_load_data.save_load_data import load_all_data, save_all_data
+from src.command_processing.command_handler import get_all_command_list, process_command
+from src.helpers import first_word_completer
 
 console = Console()
 
 def main():
-    user_name = console.input("Enter your name >>> ")
-    console.print(f"Welcome {user_name} to the assistant bot!", style="bold green")
-    book, notes = load_all_data()
-    print(command_processor.show_help_file())
-    
-    base_commands = [command.value for command in CommandEnum]
-    exit_commands = list(CommandEnum.EXIT_COMMANDS.value)
-    all_commands = base_commands + exit_commands
-    command_completer = WordCompleter(all_commands, ignore_case=True)
+    try:
+        prompt_text = Text(messages.ASK_USER_NAME_MESSAGE, style=style_consts.WELCOME_TEXT_STYLE)
+        user_name = console.input(prompt_text)
+        console.print(f"[{style_consts.WELCOME_TEXT_STYLE}]{messages.WELCOME_MESSAGE} {user_name}[/]")
+        book, notes = load_all_data()
+        console.print(style_consts.HELP_FILE_TEXT_COLOR + contact_command_processor.show_help_file())
+        all_command_list = get_all_command_list()
+        command_completer = WordCompleter(all_command_list, ignore_case=True)
+        filter_completer = first_word_completer.FirstWordFilterCompleter(command_completer)
+        session = PromptSession(style=Style.from_dict(style_consts.AUTO_COMPLETE_STYLE))
 
-    while True:
-        try:
-            user_data = input("[bold yellow]Enter the command >>>[/] ")
-            command, *args = parse_input_data(user_data)
+        while True:
+            try:
+                user_data = session.prompt(HTML(f"<{style_consts.PROMPT_COLOR}>{messages.ASK_COMMAND_MESSAGE}</{style_consts.PROMPT_COLOR}>"), completer=filter_completer, complete_while_typing=True)
+                command, *args = parse_input_data(user_data)
 
-            if command.lower() == CommandEnum.HELP.value:
-                print(command_processor.show_help_file())
-                continue
-
-            if command in CommandEnum.EXIT_COMMANDS.value:
-                save_all_data(book, notes)
-                console.print(f"Good bye {user_name}!", style="green")
-                break
-
-            match command:
-                case CommandEnum.HELLO.value:
-                    console.print(f"[purple]How can I help you, {user_name}?")
-                case CommandEnum.ADD.value:
-                    console.print(command_processor.add_contact(args, book))
-                case CommandEnum.CHANGE.value:
-                    console.print(command_processor.update_contact(args, book))
-                case CommandEnum.SHOW_PHONE.value:
-                    console.print(command_processor.show_phones(args, book))
-                case CommandEnum.REMOVE_PHONE.value:
-                    console.print(command_processor.remove_phone(args, book))
-                case CommandEnum.ADD_EMAIL.value:
-                    console.print(command_processor.add_email(args, book))
-                case CommandEnum.SHOW_EMAIL.value:
-                    console.print(command_processor.show_emails(args, book))
-                case CommandEnum.REMOVE_EMAIL.value:
-                    console.print(command_processor.remove_email(args, book))
-                case CommandEnum.SHOW_ALL.value:
-                    console.print(command_processor.show_all(book))
-                case CommandEnum.ADD_BIRTHDAY.value:
-                    console.print(command_processor.add_birthday(args, book))
-                case CommandEnum.SHOW_BIRTHDAY.value:
-                    console.print(command_processor.show_birthday(args, book))
-                case CommandEnum.BIRTHDAYS.value:
-                    console.print(command_processor.birthdays(book))
-
-                case CommandEnum.ADD_NOTE.value:
-                    console.print(notes_processor.add_note(args, notes))
-                case CommandEnum.EDIT_NOTE.value:
-                    console.print(notes_processor.edit_note(args, notes))
-                case CommandEnum.DELETE_NOTE.value:
-                    console.print(notes_processor.delete_note(args, notes))
-                case CommandEnum.LIST_NOTES.value:
-                    console.print(notes_processor.list_notes(notes))
-
-                case CommandEnum.ADD_TAG.value:
-                    console.print(notes_processor.add_tag(args,notes))
-                case CommandEnum.REMOVE_TAG.value:
-                    console.print(notes_processor.remove_tag(args,notes))
-                case CommandEnum.SEARCH_NOTES.value:
-                    console.print(notes_processor.search_notes(args, notes))
-
-                case CommandEnum.REMOVE_CONTACT.value:
-                    console.print(command_processor.remove_contact(args, book))
-                case CommandEnum.FIND_CONTACT_BY_NAME.value:
-                    console.print(command_processor.find_contact_by_name(args, book))
-                case CommandEnum.FIND_CONTACT_BY_EMAIL.value:
-                    console.print(command_processor.find_contact_by_email(args, book))
-                case CommandEnum.ADD_ADDRESS.value:
-                    console.print(command_processor.add_address(args, book))
-                case CommandEnum.REMOVE_ADDRESS.value:
-                    console.print(command_processor.remove_address(args, book))
-                case _:
-                    console.print("[red]Invalid command.[/]")
-                    input_command = console.input("[yellow]Would you like to see all commands list? Y/N >>>[/] ").strip().lower()
+                if not command in all_command_list:
+                    console.print(f"{style_consts.ERROR_TEXT_COLOR}{messages.INVALID_COMMAND_MESSAGE}")
+                    input_command = console.input(f"{style_consts.ASK_QUESTION_TEXT_COLOR}{messages.QUESTION_HELP_FILE_MESSAGE}").strip().lower()
                     if input_command == 'y':
-                        console.print("[purple]" + command_processor.show_help_file())
-        except Exception as error:
-            console.print("[red]Error happened: ", error)
+                        console.print(style_consts.HELP_FILE_TEXT_COLOR + contact_command_processor.show_help_file())
+                    continue
 
+                if command in [command.value for command in ExitCommandEnum]:
+                    save_all_data(book, notes)
+                    prompt_text = Text(f"{messages.GOOD_BYE_MESSAGE}{user_name}!", style=style_consts.WELCOME_TEXT_STYLE)
+                    console.print(prompt_text)
+                    break
+
+                match command:
+                    case GeneralCommandEnum.HELLO.value:
+                        console.print(f"{style_consts.HELP_FILE_TEXT_COLOR}{messages.HELLO_COMMAND_MESSAGE}{user_name}?")
+                    case GeneralCommandEnum.HELP.value:
+                        console.print(style_consts.HELP_FILE_TEXT_COLOR + contact_command_processor.show_help_file())
+
+                console.print(process_command(command, args, notes, book))
+            except Exception as error:
+                console.print(f"{style_consts.ERROR_TEXT_COLOR}{messages.UNEXPECTED_ERROR_MESSAGE}", error)
+    except:
+        console.print(f"{style_consts.ERROR_TEXT_COLOR}{messages.UNEXPECTED_ERROR_MESSAGE}", error)
 
 if __name__ == "__main__":
     main()

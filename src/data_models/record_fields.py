@@ -3,9 +3,10 @@ from datetime import datetime
 
 from rich.table import Table
 from rich.text import Text
+from src.constants import messages, style_consts
 
+EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 MAX_LEN_PHONE_NUMBER = 10
-email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
 class Field:
     def __init__(self, value):
@@ -27,7 +28,7 @@ class Field:
 
 class ListField(Field):
     def __rich__(self):
-        sub = Table(show_header=False, box=None, padding=0)
+        sub = Table(show_header=False, box=None, padding=0, style=style_consts.PROGRESS_BAR_FINISH_STYLE)
         for item in self.value:
             sub.add_row(item)
         return sub
@@ -35,17 +36,17 @@ class ListField(Field):
 class Name(Field):
     def __init__(self, value):
         if not value:
-            raise ValueError("Name cannot be empty")
+            raise ValueError(messages.EMPTY_NAME_MESSAGE)
         super().__init__(value)
 
     def __rich__(self):
-        return Text(self.value, style="bold green")
+        return Text(self.value, style=style_consts.SUCCESS_RESPONSE_TEXT_COLOR)
 
 
 class Phone(Field):
     def __init__(self, value):
         if not self.is_phone_number_valid(value):
-            raise ValueError(f"Phone number must be {MAX_LEN_PHONE_NUMBER} digits")
+            raise ValueError(messages.INVALID_PHONE_NUMBER)
         super().__init__(value)
     
     def is_phone_number_valid(self, phone_number):
@@ -60,8 +61,8 @@ class Email(Field):
         super().__init__(email)
 
     def is_email_valid(self, email: str):
-        if re.match(email_regex, email) is None:
-            raise Exception("Invalid email address")
+        if re.match(EMAIL_REGEX, email) is None:
+            raise ValueError(messages.INVALID_EMAIL_ADDRESS_MESSAGE)
 
     def update(self, email):
         self.is_email_valid(email)
@@ -72,17 +73,17 @@ class Birthday(Field):
         try:
             self.value = self.parse_birthday(value)
         except ValueError:
-            raise ValueError("Invalid date format. Date format should be DD.MM.YYYY")
+            raise ValueError(messages.INVALID_DATE_FORMAT)
         super().__init__(self.value)
         
     def parse_birthday(self, value):
         if not isinstance(value, str):
-            raise ValueError("Birthday date must be a string")
+            raise ValueError(messages.INVALID_BIRTHDAY_FORMAT)
         
         birthday_date = datetime.strptime(value, "%d.%m.%Y").date()
 
         if birthday_date > datetime.now().date():
-            raise ValueError("Birthday date cannot be in the future")
+            raise ValueError(messages.BIRTHDAY_IN_FUTURE)
 
         return birthday_date
     

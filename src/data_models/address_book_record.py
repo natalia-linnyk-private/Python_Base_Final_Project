@@ -2,6 +2,7 @@ from typing import List
 
 from src.data_models.record_fields import Name, Phone, Email
 from src.data_models.record_fields import Birthday
+from src.constants import messages
 
 class Record:
     def __init__(self, name):
@@ -14,49 +15,49 @@ class Record:
     def add_phone(self, phone_number):
         if Phone(phone_number) not in self.phones:
             self.phones.append(Phone(phone_number))
-            return f"Phone {phone_number} added to {self.name}"
+            return messages.PHONE_WAS_ADDED_MESSAGE.format(phone_number, self.name)
         else:
-            raise ValueError(f"Phone {phone_number} already exists for {self.name}")
+            raise ValueError(messages.PHONE_NUMBER_EXISTS_MESSAGE.format(phone_number, self.name))
     
     def edit_phone(self, old_phone_number, new_phone_number):
         for index, phone in enumerate(self.phones):
             if phone.value == old_phone_number:
                 self.phones[index] = Phone(new_phone_number)
-                return f"Phone {old_phone_number} changed to {new_phone_number} for {self.name}"
+                return messages.PHONE_NUMBER_UPDATED_MESSAGE.format(old_phone_number, new_phone_number, self.name)
         
-        raise ValueError(f"Phone {old_phone_number} not found for {self.name}")
+        raise ValueError(messages.PHONE_NUMBER_NOT_FOUND.format(old_phone_number, self.name))
     
     def find_phone(self, phone_number):
         for phone in self.phones:
             if phone.value == phone_number:
                 return phone.value
         
-        raise ValueError(f"Phone {phone_number} not found for {self.name}")
+        raise ValueError(messages.PHONE_NUMBER_NOT_FOUND.format(phone_number, self.name))
     
     def remove_phone(self, phone: Phone):
         if not phone in self.phones:
-            raise ValueError(f"Phone {phone} not found for {self.name}")
+            raise ValueError(messages.PHONE_NUMBER_NOT_FOUND.format(phone.value, self.name))
         self.phones.remove(phone)
-        return f"Phone {phone} removed from {self.name}"
+        return messages.PHONE_NUMBER_REMOVED_MESSAGE.format(phone, self.name)
 
     def add_birthday(self, birthday_str):
         self.birthday = Birthday(birthday_str)
-        return f"Birthday {birthday_str} added to {self.name}"
+        return messages.BIRTHDAY_ADDED_MESSAGE.format(birthday_str, self.name)
 
     def add_email(self, email: Email):
         if email in self.emails:
-            raise ValueError(f"Email {email} already exists for {self.name}")
+            raise ValueError(messages.EMAIL_EXISTS_MESSAGE.format(email, self.name))
         self.emails.append(email)
 
     def remove_email(self, email: Email):
         if not email in self.emails:
-            raise ValueError(f"Email {email} is not set for this contact.")
+            raise ValueError(messages.EMAIL_IS_NOT_SET_MESSAGE.format(email))
         self.emails.remove(email)
         return "Email removed."
 
     def add_address(self, address: str):
         if not address:
-            raise ValueError("Address cannot be empty")
+            raise ValueError(messages.EMPTY_ADDRESS_MESSAGE)
         self.address = address
 
     def __str__(self):

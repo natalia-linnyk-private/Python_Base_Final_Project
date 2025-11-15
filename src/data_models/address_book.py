@@ -2,6 +2,7 @@ from collections import UserDict
 from src.data_models.address_book_record import Record
 from datetime import datetime
 from src.data_models.record_fields import Email
+from src.constants import messages
 
 class AddressBook(UserDict):
     def __init__(self):
@@ -10,26 +11,17 @@ class AddressBook(UserDict):
     
     def add_record(self, record):
         if not isinstance(record, Record):
-            raise ValueError("Only Record objects can be added to address book")
+            raise ValueError(messages.INVALID_DATA_MESSAGE)
         
         self.data[record.name.value] = record
-        return f"Record for {record.name} added to address book."
+        return messages.SUCCESS_ADDING_RECORD_MESSAGE.format(record.name)
     
     def delete_record(self, name):
         if name in self.data:
             del self.data[name]
-            return f"Record for {name} deleted from address book."
+            return messages.SUCCESS_DELETING_RECORD_MESSAGE.format(name)
         else:
-            raise ValueError (f"Record for {name} not found in address book.")
-    
-    def __str__(self):
-        if not self.data:
-            raise ValueError("Address book is empty")
-        
-        result = ["Address Book:"]
-        for record in self.data.values():
-            result.append(str(record))
-        return '\n'.join(result)
+            raise ValueError(messages.RECORD_NOT_FOUND_MESSAGE.format(name))
     
     def get_upcoming_birthdays(self, days):
         upcoming_birthdays = []

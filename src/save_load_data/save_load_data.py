@@ -12,7 +12,7 @@ from rich.progress import (
     TimeRemainingColumn
 )
 import time
-import src.constants.loading_data_consts as consts
+from src.constants import loading_data_consts as consts, style_consts
 
 def get_full_filepath(filename: str) -> Path:
     user_home = Path.home()
@@ -25,13 +25,13 @@ def get_progress_object() -> Progress:
     return Progress(
         SpinnerColumn(),
         TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
-        BarColumn(bar_width=None, complete_style="blue", finished_style="green"),
+        BarColumn(bar_width=None, complete_style=style_consts.PROGRESS_BAR_COMPLETE_STYLE, finished_style=style_consts.PROGRESS_BAR_FINISH_STYLE),
         TextColumn("[white]{task.percentage:>3.1f}%"),
-        TextColumn("•", style="yellow"),
+        TextColumn("•", style=style_consts.PROGRESS_TEXT_COLUMN_COLOR),
         DownloadColumn(),
-        TextColumn("•", style="yellow"),
+        TextColumn("•", style=style_consts.PROGRESS_TEXT_COLUMN_COLOR),
         TransferSpeedColumn(),
-        TextColumn("•", style="yellow"),
+        TextColumn("•", style=style_consts.PROGRESS_TEXT_COLUMN_COLOR),
         TimeRemainingColumn())
 
 def mimic_loading(progress: Progress, message_loading: str, filename: str):

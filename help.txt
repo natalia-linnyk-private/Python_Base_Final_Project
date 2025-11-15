@@ -1,26 +1,49 @@
-List of available commands:
-add - adds contact, example of input: add [contact name] [phone]
-change - changes existing contact, example of input: change [contact name] [phone]
-remove - removes contact from the book, example of input: remove [contact name]
-find-by-email - finds and show all information about the contact by email, example of input: find-by-email [email]
-find-by-name - finds and show all information about the contact by name, example of input: find-by-name [contact name]
-phone - returns phone number by name, example of input: phone [contact name]
-remove_phone - removes a phone from the record, example of input: remove_phone [contact name] [phone]
-add-email - adds email to existing contact, example of input: add-email [contact name] [email]
-email - returns email by name, example of input: email [contact name]
-remove_email - removes an email from the record, example of input: remove_email [contact name] [email]
-add-address - adds address to existing contact or update it if address already exists, example of input: add-address [contact name] [address]
-remove-address - removes address from contact, example of input: remove-address [contact name]
-all - shows all added contacts, example of input: all
+                     List of available commands:
+----------------- Commands to work with Address Book ----------------------
+add            - adds contact to address book,
+                 example of input: add [contact name] [phone]
+change         - changes existing contact's phone,
+                 example of input: change [contact name] [phone]
+remove         - removes contact from the book,
+                 example of input: remove [contact name]
+find-by-email  - finds and show all information about the contact by email,
+                 example of input: find-by-email [email]
+find-by-name   - finds and show all information about the contact by name,
+                 example of input: find-by-name [contact name]
+phone          - returns phone number by name,
+                 example of input: phone [contact name]
+remove-phone   - removes a phone from the record,
+                  example of input: remove_phone [contact name] [phone]
+add-email      - adds email to existing contact,
+                 example of input: add-email [contact name] [email]
+email          - returns email by name,
+                 example of input: email [contact name]
+remove-email   - removes an email from the record,
+                 example of input: remove_email [contact name] [email]
+add-address    - adds address to existing contact or update it if address already exists,
+                 example of input: add-address [contact name] [address data]
+remove-address - removes address from contact,
+                 example of input: remove-address [contact name]
+all            - shows all added contacts,
+                 example of input: all
+add-birthday   - adds birthday date to the selected contact in format DD.MM.YYYY,
+                 example of input: add-birthday [contact name] [birthday]
+show-birthday  - shows birthday date of the selected contact,
+                 example of input: show-birthday [contact name]
+birthdays      - shows all contacts that have birthdays during selected count of
+                 days (during next week by default), example of input: birthdays
+
+-------------------------- Commands to work with Notes -----------------------------
+add-note   - adds a note, example of input: add [note title]
+edit-note  - edits an existing note, example of input: edit-note [note ID]
+all-notes  - shows all note titles by ID, example of input: all-notes
+add-tag    - adds a tag to a note, example of input: add-tag [note ID] [tag]
+remove-tag - removes a tag from a note, example of input: remove-tag [note ID] [tag]
+find-notes - finds notes by tag and sorts them by one of params (id, title, created_at, updated_at),
+             example of input: find-notes [tag] [sort param]
+remove-note - deletes a note, example of input: delete-note [note ID]
+
+----------- General commands -----------------------
 hello - says hello, example of input: hello
-add-birthday - adds birthday date to the selected contact in format DD.MM.YYYY, example of input: add-birthday [contact name] [birthday]
-show-birthday - shows birthday date of the selected contact, example of input: show-birthday [contact name]
-birthdays - shows all contacts that have birthdays during next week, example of input: birthdays
-add-note - adds a note, example of input: add [note title]
-edit-note - edit an existing note, example of input: edit-note [note ID]
-all-notes - shows all note titles by ID, example of input: all-notes
-add-tag - add a tag to a note, example of input: add-tag [note ID] [tag]
-remove-tag - remove a tag from a note, example of input: remove-tag [note ID] [tag]
-find-notes - find notes by tag, example of input: find-notes [tag]
-remove-note - delete a note, example of input: delete-note [note ID]
 close / exit - finish dialog with assistant bot
+help - show main menu again (list of available commands)

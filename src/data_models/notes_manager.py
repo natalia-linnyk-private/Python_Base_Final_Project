@@ -4,8 +4,8 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.widgets import TextArea, Label
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit
-from collections import UserDict
-from typing import Set
+from src.constants import messages
+from src.enums.notes_enum import SortNotesParamEnum
 
 from rich.text import Text
 
@@ -21,36 +21,28 @@ class DateField(Field):
     def __rich__(self):
         return Text(self.__str__(), style="dodger_blue2")
 
-class Tag(Field):
-    def __init__(self, tag):
-        super().__init__(tag)
-
 class Note(Field):
     def __init__(self, title):
         super().__init__(title)
         self.content = ""
         self.created_at = DateField(datetime.datetime.now())
         self.updated_at = self.created_at
-        self.tags: Set[Tag] = set()
+        self.tags = set()
 
     def edit(self, new_content):
         self.content = new_content
         self.updated_at = DateField(datetime.datetime.now())
 
-    def add_tag(self, tag: Tag):
+    def add_tag(self, tag: str):
         self.tags.add(tag)
 
-    def remove_tag(self, tag: Tag):
-        self.tags.remove(tag)
+    def remove_tag(self, tag : str):
+        if tag in self.tags:
+            self.tags.remove(tag)
+        else:
+            raise ValueError(messages.TAG_NOT_FOUND_MESSAGE)
 
-    def __str__(self):
-        return (f"Title: '{self.value}' "
-                f"Tags: {', '.join(t.value for t in self.tags)} "
-                f"created at: {self.created_at} "
-                f"updated at: {self.updated_at}")
-
-
-class NotesManager(UserDict):
+class NotesManager():
     def __init__(self):
         super().__init__()
         self.notes = {}
@@ -66,22 +58,35 @@ class NotesManager(UserDict):
     def get(self, key, default=None) -> Note:
         return self.notes.get(key, default)
 
-    def search(self, tag: str):
+    def search_by_tag(self, tag: str, sort_by=None):
+        notes_with_tag = []
         for nid, note in self.notes.items():
-            if Tag(tag) in note.tags:
-                yield nid, note
+            if tag.lower() in note.tags:
+                notes_with_tag.append((nid, note))
+        
+        if sort_by:
+            match sort_by:
+                case SortNotesParamEnum.SORT_BY_ID.value:
+                    notes_with_tag.sort(key=lambda x: x[0], reverse=True)
+                case SortNotesParamEnum.SORT_BY_TITLE.value:
+                    notes_with_tag.sort(key=lambda x: Note(x[1]).value, reverse=True)
+                case SortNotesParamEnum.SORT_BY_CREATED_DATE.value:
+                    notes_with_tag.sort(key=lambda x: Note(x[1]).created_at, reverse=True)
+                case SortNotesParamEnum.SORT_BY_UPDATED_DATE.value:
+                    notes_with_tag.sort(key=lambda x: Note(x[1]).updated_at, reverse=True)
+        yield from notes_with_tag
 
     def delete(self, note_id: int):
         if note_id in self.notes:
             del self.notes[note_id]
-            return f"Deleted note {note_id}"
+            return messages.SUCCESS_DELETING_NOTE_MESSAGE.format(note_id)
         else:
-            raise ValueError("Note not found")
+            raise ValueError(messages.NOTE_NOT_FOUND_MESSAGE)
 
     def edit_in_editor(self, note_id):
         note = self.get(note_id)
         if not note:
-            return "Note not found."
+            raise ValueError(messages.NOTE_NOT_FOUND_MESSAGE)
 
         text = TextArea(text=note.content or "", multiline=True, scrollbar=True, wrap_lines=False)
         status_bar = Label("  Ctrl-S: Save   Ctrl-Q: Quit", style="class:status")
@@ -101,15 +106,6 @@ class NotesManager(UserDict):
 
         if new_content.strip() != note.content.strip():
             note.edit(new_content)
-            return f"Updated note '{note.value}' ({note_id})"
+            return messages.SUCCESS_UPDATING_NOTE_MESSAGE.format(note.value, note_id)
         else:
-            return "No changes made."
-
-    def __str__(self):
-        if not self.notes:
-            raise ValueError("Notes book is empty")
-
-        result = ["Notes Book:"]
-        for id, note in self.notes.items():
-            result.append(f"NoteId {int(id)}: {note}")
-        return '\n'.join(result)
+            return messages.NO_CHAGES_WAS_MADE_MESSAGE
