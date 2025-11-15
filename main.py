@@ -14,21 +14,20 @@ def main():
     user_name = console.input("Enter your name >>> ")
     console.print(f"Welcome {user_name} to the assistant bot!", style="bold green")
     book, notes = load_all_data()
-    print(command_processor.show_help_file())
+    console.print(command_processor.show_help_file())
     
-    base_commands = [command.value for command in CommandEnum]
+    base_commands = [
+        cmd.value for cmd in CommandEnum
+        if isinstance(cmd.value, str)
+    ]
     exit_commands = list(CommandEnum.EXIT_COMMANDS.value)
     all_commands = base_commands + exit_commands
     command_completer = WordCompleter(all_commands, ignore_case=True)
 
     while True:
         try:
-            user_data = input("[bold yellow]Enter the command >>>[/] ")
+            user_data = prompt("Enter the command >>> ", completer=command_completer)
             command, *args = parse_input_data(user_data)
-
-            if command.lower() == CommandEnum.HELP.value:
-                print(command_processor.show_help_file())
-                continue
 
             if command in CommandEnum.EXIT_COMMANDS.value:
                 save_all_data(book, notes)
@@ -38,6 +37,8 @@ def main():
             match command:
                 case CommandEnum.HELLO.value:
                     console.print(f"[purple]How can I help you, {user_name}?")
+                case CommandEnum.HELP.value:
+                    console.print(command_processor.show_help_file())
                 case CommandEnum.ADD.value:
                     console.print(command_processor.add_contact(args, book))
                 case CommandEnum.CHANGE.value:

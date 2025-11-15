@@ -7,7 +7,7 @@ def input_error(func):
         return Text(error, style="bold red")
 
     def green(success) -> Text:
-        if success is str:
+        if isinstance(success, str):
             return Text(success, style="green")
         else:
             return success
@@ -19,7 +19,7 @@ def input_error(func):
             return red(error.args[0] if error.args else "Error accessing contacts")
         except ValueError as error:
             return red(error.args[0] if error.args else "Wrong format of input data")
-        except IndexError as error:
+        except IndexError:
             return red("Not enough count of arguments")
         except FileNotFoundError as error:
             return red(error.args[0] if error.args else "Help file not found")

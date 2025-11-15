@@ -1,9 +1,9 @@
 from rich.table import Table
 
-from src.data_models.record_fields import ListField
+from src.data_models.record_fields import ListField, Email, Phone
 from src.error_handling.error_handler import input_error
 from src.data_models.address_book import AddressBook
-from src.data_models.address_book_record import Record, Email
+from src.data_models.address_book_record import Record
 
 COUNT_DAYS_UPCOMING_BIRTHDAYS = 7
 HELP_FILE_PATH = "help.txt"
