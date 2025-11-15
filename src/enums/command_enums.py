@@ -26,6 +26,7 @@ class NotesCommandEnum(Enum):
     ADD_NOTE_TAG = "add-tag"
     REMOVE_NOTE_TAG = "remove-tag"
     SEARCH_NOTES = "find-notes"
+    SHOW_NOTE_CONTENT = "show-note"
 
 class GeneralCommandEnum(Enum):
     HELLO = "hello"

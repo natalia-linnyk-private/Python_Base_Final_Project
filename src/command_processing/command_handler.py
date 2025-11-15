@@ -62,6 +62,8 @@ def process_notes_command(command: str, args: list[str], notes : NotesManager):
                 return notes_command_processor.remove_tag(args,notes)
             case NotesCommandEnum.SEARCH_NOTES.value:
                 return notes_command_processor.search_notes_by_tag(args, notes)
+            case NotesCommandEnum.SHOW_NOTE_CONTENT.value:
+                return notes_command_processor.show_note_content(args, notes)
 
 def process_command(command: str, args: list[str], notes : NotesManager, book : AddressBook):
     if command in [member.value for member in ContactCommandEnum]:

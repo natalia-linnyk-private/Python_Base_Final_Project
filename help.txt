@@ -42,6 +42,8 @@ remove-tag - removes a tag from a note, example of input: remove-tag [note ID] [
 find-notes - finds notes by tag and sorts them by one of params (id, title, created_at, updated_at),
              example of input: find-notes [tag] [sort param]
 remove-note - deletes a note, example of input: delete-note [note ID]
+show-note   - shows content of note by note id,
+              example of input: show-note  [note ID]
 
 ----------- General commands -----------------------
 hello - says hello, example of input: hello

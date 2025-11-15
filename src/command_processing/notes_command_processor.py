@@ -29,6 +29,14 @@ def list_notes(notes: NotesManager):
     return as_table(notes.notes)
 
 @input_error
+def show_note_content(args, notes: NotesManager):
+    note_id = args[0]
+    note = notes.get(int(note_id))
+    if not note:
+        raise KeyError(messages.NOTE_NOT_FOUND_MESSAGE)
+    return note.content
+
+@input_error
 def add_tag(args, notes: NotesManager):
     note_id = args[0]
     tag = args[1]
